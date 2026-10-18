@@ -1,11 +1,10 @@
 name: Build ARM64 DEB
 
 on:
-  workflow_dispatch: # 允许你在网页上手动点击运行
+  workflow_dispatch:
 
 jobs:
   build:
-    # 使用 GitHub 免费提供的 ARM64 Ubuntu 服务器
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Checkout code
@@ -30,7 +29,6 @@ jobs:
         run: |
           npm run build
           npm run build:windowtolayer
-          # 打包 deb，且禁止它自动发布 release
           npx electron-builder --linux deb --arm64 -p never
 
       - name: Upload DEB Artifact
