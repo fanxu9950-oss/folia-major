@@ -1,0 +1,38 @@
+name: Build Folia ARM64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+
+      - name: Install System Deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential python3 make g++ fpm ruby ruby-dev
+
+      - name: Install NPM Deps
+        run: |
+          npm install --force
+          npm install @rollup/rollup-linux-arm64-gnu --save-optional
+
+      - name: Build and Pack
+        run: |
+          npm run build
+          npm run build:windowtolayer
+          npx electron-builder --linux deb --arm64 -p never
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Folia-ARM64-DEB
+          path: release/*.deb
